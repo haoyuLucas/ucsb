@@ -38,7 +38,7 @@ WN18RR_dir = '/home/haoyu/downloads/WN18-RR/processed'
 #compute_from_sparse_npz(os.path.join(FB15K237_dir, 'train.npz'))
 #compute_from_sparse_npz(os.path.join(FB15K237_dir, 'valid.npz'))
 #compute_from_sparse_npz(os.path.join(FB15K237_dir, 'test.npz'))
-#compute_from_sparse_npz(os.path.join(NELL995_dir, 'raw.npz'))
+compute_from_sparse_npz(os.path.join(NELL995_dir, 'raw.npz'))
 compute_from_sparse_npz(os.path.join(WN18RR_dir, 'train.npz'))
 compute_from_sparse_npz(os.path.join(WN18RR_dir, 'valid.npz'))
 compute_from_sparse_npz(os.path.join(WN18RR_dir, 'test.npz'))
