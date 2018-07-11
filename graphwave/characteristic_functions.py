@@ -6,9 +6,9 @@ in Euclidean space
 """
 import cmath
 import math
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sb
+#import seaborn as sb
 
 
 def plot_characteristic_function(phi_s, bunch, time_pnts, ind_tau):
@@ -68,6 +68,7 @@ def charac_function(time_points, temp):
     n_nodes = temp.shape[1]
     final_sig = np.zeros((2 * n_timepnts, n_nodes))
     zeros_vec = np.array([1.0 / n_nodes*(n_nodes - len(d[i])) for i in range(n_nodes)])
+    print("Computing character function for a scale.")
     for i in range(n_nodes):
         final_sig[::2, i] = zeros_vec[i] +\
                             1.0 / n_nodes *\

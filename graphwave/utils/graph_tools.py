@@ -2,10 +2,10 @@
 """
 Tools for the analysis of the Graph
 """
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
-import seaborn as sb
+#import seaborn as sb
 import scipy as sc
 
 
@@ -41,7 +41,7 @@ def normalize_matrix(m, direction="row", type_norm="max"):
         elif type_norm == "l1":
             deg=[1.0 / np.sum(np.abs(m[i,:])) for i in range(n)]
         else:
-            print "direction not recognized. degefaulting to l2"
+            print ("direction not recognized. degefaulting to l2")
             deg=[1.0 / np.linalg.norm(m[i, :]) for i in range(n)]
         deg = np.diag(deg)
         return deg.dot(m)
@@ -49,5 +49,5 @@ def normalize_matrix(m, direction="row", type_norm="max"):
         m_tilde = normalize_matrix(m.T, direction="row", type_norm=type_norm)
         return m_tilde.T
     else:
-        print "direction not recognized. degefaulting to column"
+        print ("direction not recognized. degefaulting to column")
         return normalize_matrix(m.T, direction="row", type_norm=type_norm)

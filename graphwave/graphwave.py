@@ -1,6 +1,5 @@
 import copy
 import math
-import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import scipy as sc
@@ -9,13 +8,12 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 import sys, os
 
-sys.path.append('../')
 from characteristic_functions import charac_function, charac_function_multiscale
 from utils.graph_tools import laplacian
 
 
 TAUS = [1, 10, 25, 50]
-ORDER = 30
+ORDER = 11
 PROC = 'approximate'
 ETA_MAX = 0.95
 ETA_MIN = 0.80
@@ -63,8 +61,10 @@ def heat_diffusion_ind(graph, taus=TAUS, order = ORDER, proc = PROC):
     # Compute Laplacian
     a = nx.adjacency_matrix(graph)
     n_nodes, _ = a.shape
-    thres = np.vectorize(lambda x : x if x > 1e-4 * 1.0 / n_nodes else 0)
+    #thres = np.vectorize(lambda x : x if x > 1e-4 * 1.0 / n_nodes else 0)
     lap = laplacian(a)
+    print('n_nodes:', n_nodes)
+    print('laplacian nnz(GB):', "%.3f" % (lap.nnz/1024/1024/1024*4))
     n_filters = len(taus)
     if proc == 'exact':
         ### Compute the exact signature
@@ -73,15 +73,22 @@ def heat_diffusion_ind(graph, taus=TAUS, order = ORDER, proc = PROC):
         for i in range(n_filters):
              heat[i] = U.dot(np.diagflat(np.exp(- taus[i] * lamb).flatten())).dot(U.T)
     else:
+        # Create a constant matrix
+        sparse_eye = sc.sparse.eye(n_nodes)
         heat = {i: sc.sparse.csc_matrix((n_nodes, n_nodes)) for i in range(n_filters) }
-        monome = {0: sc.sparse.eye(n_nodes), 1: lap - sc.sparse.eye(n_nodes)}
+        monome = {0: sparse_eye, 1: lap - sparse_eye}
         for k in range(2, order + 1):
-             monome[k] = 2 * (lap - sc.sparse.eye(n_nodes)).dot(monome[k-1]) - monome[k - 2]
+            monome[k] = 2 * (lap - sparse_eye).dot(monome[k-1]) - monome[k - 2]
+            print("Computing monome", k)
+            print("monome number of nonzero(GB):", "%.3f" % (monome[k].nnz/1024/1024/1024*4))
         for i in range(n_filters):
             coeffs = compute_cheb_coeff_basis(taus[i], order)
             heat[i] = sc.sum([ coeffs[k] * monome[k] for k in range(0, order + 1)])
-            temp = thres(heat[i].A) # cleans up the small coefficients
+            #temp = thres(heat[i].A) # cleans up the small coefficients
+            temp = heat[i]
+            temp.data = np.where(temp.data > 1e-4 * 1.0 / n_nodes, temp.data, 0)
             heat[i] = sc.sparse.csc_matrix(temp)
+            print("Computing heat map for filter", i)
     return heat, taus
 
 
