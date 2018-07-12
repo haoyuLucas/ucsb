@@ -129,6 +129,7 @@ def graphwave_alg(graph, time_pnts, taus= 'auto',
         smax = -np.log(ETA_MIN) * np.sqrt( 0.5 / l1)
         smin = -np.log(ETA_MAX) * np.sqrt( 0.5 / l1)
         taus = np.linspace(smin, smax, nb_filters)
+        print(taus)
     heat_print, _ = heat_diffusion_ind(graph, list(taus), order=order, proc = proc)
     chi = charac_function_multiscale(heat_print, time_pnts)
     return chi, heat_print, taus
